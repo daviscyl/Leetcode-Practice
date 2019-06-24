@@ -22,7 +22,32 @@ from random import sample
 
 class Solution:
     def oddEvenJumps(self, A: [int]) -> int:
-        return None
+        L = len(A)
+        if L < 2:
+            return L
+
+        odds = [False]*(L-1) + [True]
+        evens = [False]*(L-1) + [True]
+
+        indexes = sorted(range(L), key=lambda i: A[i])
+        odd_jump = self.jump_dests(indexes)
+        indexes = sorted(range(L), key=lambda i: -A[i])
+        even_jump = self.jump_dests(indexes)
+
+        for i in range(L-2, -1, -1):
+            odds[i] = evens[odd_jump[i]] if odd_jump[i] else False
+            evens[i] = odds[even_jump[i]] if even_jump[i] else False
+
+        return sum(odds)
+
+    def jump_dests(self, indexes):
+        dests = [None] * len(indexes)
+        stack = []
+        for i in indexes:
+            while stack and i > stack[-1]:
+                dests[stack.pop()] = i
+            stack.append(i)
+        return dests
 
 
 # test solution
